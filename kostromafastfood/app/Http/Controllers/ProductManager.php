@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Products;
+use Illuminate\Http\Request;
+
+class ProductManager extends Controller
+{
+    function getProducts(){
+        return Products::get();
+    }
+    function listProducts(){
+        $products = $this->getProducts();
+        return view("products", compact("products"));
+    }
+    function addProducts(Request $request){
+        $product = new Products();
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->image = $request->image;
+        if($product->save()){
+            return redirect(route("products"))->with("success", "Блюдо добавлено успешно");
+        }
+        return redirect(route("products"))->with("error", "Ошибка добавления блюда");
+    }
+    function deleteProducts(Request $request){
+        if(Products::where("id", $request->id)->delete()){
+            return redirect(route("products"))->with("success", "Блюдо успешно удалено");
+        }
+        return redirect(route("products"))->with("error", "Ошибка удаления блюда");
+    }
+}
